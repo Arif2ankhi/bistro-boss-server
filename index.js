@@ -155,12 +155,52 @@ async function run() {
         const result = await menuCollection.find().toArray();
         res.send(result);
     })
+    
+    // update menu from manageItem mod 69 
+
+    app.get('/menu/:id', async (req, res) => {
+        const id = req.params.id;
+        const query = {_id: new ObjectId(id)}
+        const result = await menuCollection.findOne(query);
+        res.send(result);
+
+    })
+
 
 
     // adding new item to menu from the form (addItems routes form with post method )
     app.post('/menu', verifyToken, verifyAdmin, async (req, res) => {
         const item = req.body;
         const result = await menuCollection.insertOne(item);
+        res.send(result);
+    })
+
+    app.patch('/menu/:id',  async (req, res) => {
+        const item = req.body;
+        const id = req.params.id;
+        const filter = {_id: new ObjectId(id)};
+        const updatedDoc = {
+            $set: {
+                name: item.name,
+                category: item.category,
+                price:item.price,
+                recipe: item.recipe,
+                image: item.image
+
+            }
+        };
+        const result = await menuCollection.updateOne(filter, updatedDoc); 
+        res.send(result);
+
+    })
+
+    // delete menu from dashboard/menu/:id mod 69 
+
+    app.delete('/menu/:id', verifyToken, verifyAdmin, async (req, res) => {
+        const id = req.params.id;
+        const query = { _id: new ObjectId(id)}
+        // const query = { _id: id}
+        const result = await menuCollection.deleteOne(query);
         res.send(result);
     })
 
